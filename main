@@ -1,0 +1,554 @@
+/**
+ * @Author: David Liotta
+ * 
+ * The purpose of this script is to create tools to display student data for each center/online info
+ */
+
+function onOpen() {
+  // Gennerating host UI tools
+  var ui = SpreadsheetApp.getUi();
+  ui.createMenu('Instructor Views')
+
+      .addSubMenu(ui.createMenu('Sunday')
+        .addItem('@home', 'sunOnline')
+        .addItem('@home Upper', 'sunOnlineUpper')
+        .addItem('@home Lower', 'sunOnlineLower')
+        .addItem('Chatham', 'sunChatham')
+        .addItem('Summit', 'sunSummit')
+        .addItem('Westfield', 'sunWestfield')
+        .addItem('Livingston', 'sunLivingston')
+        .addItem('Basking Ridge', 'sunBaskingRidge'))
+      .addSubMenu(ui.createMenu('Monday')
+        .addItem('@home', 'monOnline')
+        .addItem('@home Upper', 'monOnlineUpper')
+        .addItem('@home Lower', 'monOnlineLower')
+        .addItem('Chatham', 'monChatham')
+        .addItem('Summit', 'monSummit')
+        .addItem('Westfield', 'monWestfield')
+        .addItem('Livingston', 'monLivingston')
+        .addItem('Basking Ridge', 'monBaskingRidge'))
+      .addSubMenu(ui.createMenu('Tuesday')
+        .addItem('@home', 'tuesOnline')
+        .addItem('@home Upper', 'tuesOnlineUpper')
+        .addItem('@home Lower', 'tuesOnlineLower')
+        .addItem('Chatham', 'tuesChatham')
+        .addItem('Summit', 'tuesSummit')
+        .addItem('Westfield', 'tuesWestfield')
+        .addItem('Livingston', 'tuesLivingston')
+        .addItem('Basking Ridge', 'tuesBaskingRidge'))
+      .addSubMenu(ui.createMenu('Wednesday')
+        .addItem('@home', 'wedOnline')
+        .addItem('@home Upper', 'wedOnlineUpper')
+        .addItem('@home Lower', 'wedOnlineLower')
+        .addItem('Chatham', 'wedChatham')
+        .addItem('Summit', 'wedSummit')
+        .addItem('Westfield', 'wedWestfield')
+        .addItem('Livingston', 'wedLivingston')
+        .addItem('Basking Ridge', 'wedBaskingRidge'))
+      .addSubMenu(ui.createMenu('Thursday')
+        .addItem('@home', 'thurOnline')
+        .addItem('@home Upper', 'thurOnlineUpper')
+        .addItem('@home Lower', 'thurOnlineLower')
+        .addItem('Chatham', 'thurChatham')
+        .addItem('Summit', 'thurSummit')
+        .addItem('Westfield', 'thurWestfield')
+        .addItem('Livingston', 'thurLivingston')
+        .addItem('Basking Ridge', 'thurBaskingRidge'))
+      .addSubMenu(ui.createMenu('Friday')
+        .addItem('@home', 'friOnline')
+        .addItem('@home Upper', 'friOnlineUpper')
+        .addItem('@home Lower', 'friOnlineLower')
+        .addItem('Chatham', 'friChatham')
+        .addItem('Summit', 'friSummit')
+        .addItem('Westfield', 'friWestfield')
+        .addItem('Livingston', 'friLivingston')
+        .addItem('Basking Ridge', 'friBaskingRidge'))
+      .addSubMenu(ui.createMenu('Saturday')
+        .addItem('@home', 'satOnline')
+        .addItem('@home Upper', 'satOnlineUpper')
+        .addItem('@home Lower', 'satOnlineLower')
+        .addItem('Chatham', 'satChatham')
+        .addItem('Summit', 'satSummit')
+        .addItem('Westfield', 'satWestfield')
+        .addItem('Livingston', 'satLivingston')
+        .addItem('Basking Ridge', 'satBaskingRidge'))
+      //.addItem('Gamer', "gameReport")
+      .addToUi();
+}
+onOpen();
+
+// CP students original schedule, aka this is where the real data comes from
+var sheet = SpreadsheetApp.openByUrl("Not giving this out").getSheetByName('CP Students');
+// Use this data source when testing new features. It has a bunch of fake student data
+//var sheet = SpreadsheetApp.getActive().getSheetByName('Test_Data');  
+
+var hostSheet = SpreadsheetApp.getActive().getSheetByName('@home');
+var upperHostSheet = SpreadsheetApp.getActive().getSheetByName('@home Upper');
+var lowerHostSheet = SpreadsheetApp.getActive().getSheetByName('@home Lower');
+var gameSheet = SpreadsheetApp.getActive().getSheetByName('Gamer View');
+var testSheet = SpreadsheetApp.getActive().getSheetByName("Test_Sheet");
+var summitSheet = SpreadsheetApp.getActive().getSheetByName("Summit");
+var chathamSheet = SpreadsheetApp.getActive().getSheetByName("Chatham");
+var livingstonSheet = SpreadsheetApp.getActive().getSheetByName("Livingston");
+var baskingRidgeSheet = SpreadsheetApp.getActive().getSheetByName("Basking Ridge");
+var westfieldSheet = SpreadsheetApp.getActive().getSheetByName("Westfield");
+
+var startRow = 2; // First row of data to process
+var dataRange = getDataRange(sheet); // Fetch the data range of the original sheet
+// Fetch values for each row in the Range.
+var data = dataRange.getValues();
+
+var allStudents = [0,12];
+var lowerStudents = [0,6];
+var upperStudents = [7,12];
+// Each of these reports need for be different functions since UI buttons can not have parameters
+/**
+ * @home reports
+ */
+function sunOnline(){ studentReport(hostSheet, "@home", "SUNDAY"); }
+function monOnline(){ studentReport(hostSheet, "@home", "MONDAY"); }
+function tuesOnline(){ studentReport(hostSheet, "@home", "TUESDAY"); }
+function wedOnline(){ studentReport(hostSheet, "@home", "WEDNESDAY"); }
+function thurOnline(){ studentReport(hostSheet, "@home", "THURSDAY"); }
+function friOnline(){ studentReport(hostSheet, "@home", "FRIDAY"); }
+function satOnline(){ studentReport(hostSheet, "@home", "SATURDAY"); }
+
+/**
+ * @home upper reports
+ */
+function sunOnlineUpper(){ studentReport(upperHostSheet, "@home", "SUNDAY", upperStudents); }
+function monOnlineUpper(){ studentReport(upperHostSheet, "@home", "MONDAY", upperStudents); }
+function tuesOnlineUpper(){ studentReport(upperHostSheet, "@home", "TUESDAY", upperStudents); }
+function wedOnlineUpper(){ studentReport(upperHostSheet, "@home", "WEDNESDAY", upperStudents); }
+function thurOnlineUpper(){ studentReport(upperHostSheet, "@home", "THURSDAY", upperStudents); }
+function friOnlineUpper(){ studentReport(upperHostSheet, "@home", "FRIDAY", upperStudents); }
+function satOnlineUpper(){ studentReport(upperHostSheet, "@home", "SATURDAY", upperStudents); }
+
+/**
+ * @home lower reports
+ */
+function sunOnlineLower(){ studentReport(lowerHostSheet, "@home", "SUNDAY", lowerStudents); }
+function monOnlineLower(){ studentReport(lowerHostSheet, "@home", "MONDAY", lowerStudents); }
+function tuesOnlineLower(){ studentReport(lowerHostSheet, "@home", "TUESDAY", lowerStudents); }
+function wedOnlineLower(){ studentReport(lowerHostSheet, "@home", "WEDNESDAY", lowerStudents); }
+function thurOnlineLower(){ studentReport(lowerHostSheet, "@home", "THURSDAY", lowerStudents); }
+function friOnlineLower(){ studentReport(lowerHostSheet, "@home", "FRIDAY", lowerStudents); }
+function satOnlineLower(){ studentReport(lowerHostSheet, "@home", "SATURDAY", lowerStudents); }
+
+/**
+ * Summit reports
+ */
+function sunSummit(){ studentReport(summitSheet, "Summit", "SUNDAY"); }
+function monSummit(){ studentReport(summitSheet, "Summit", "MONDAY"); }
+function tuesSummit(){ studentReport(summitSheet, "Summit", "TUESDAY"); }
+function wedSummit(){ studentReport(summitSheet, "Summit", "WEDNESDAY"); }
+function thurSummit(){ studentReport(summitSheet, "Summit", "THURSDAY"); }
+function friSummit(){ studentReport(summitSheet, "Summit", "FRIDAY"); }
+function satSummit(){ studentReport(summitSheet, "Summit", "SATURDAY"); }
+
+/**
+ * Chatham reports
+ */
+function sunChatham(){ studentReport(chathamSheet, "Chatham", "SUNDAY"); }
+function monChatham(){ studentReport(chathamSheet, "Chatham", "MONDAY"); }
+function tuesChatham(){ studentReport(chathamSheet, "Chatham", "TUESDAY"); }
+function wedChatham(){ studentReport(chathamSheet, "Chatham", "WEDNESDAY"); }
+function thurChatham(){ studentReport(chathamSheet, "Chatham", "THURSDAY"); }
+function friChatham(){ studentReport(chathamSheet, "Chatham", "FRIDAY"); }
+function satChatham(){ studentReport(chathamSheet, "Chatham", "SATURDAY"); }
+
+/**
+ * Livingston reports
+ */
+function sunLivingston(){ studentReport(livingstonSheet, "Livingston", "SUNDAY"); }
+function monLivingston(){ studentReport(livingstonSheet, "Livingston", "MONDAY"); }
+function tuesLivingston(){ studentReport(livingstonSheet, "Livingston", "TUESDAY"); }
+function wedLivingston(){ studentReport(livingstonSheet, "Livingston", "WEDNESDAY"); }
+function thurLivingston(){ studentReport(livingstonSheet, "Livingston", "THURSDAY"); }
+function friLivingston(){ studentReport(livingstonSheet, "Livingston", "FRIDAY"); }
+function satLivingston(){ studentReport(livingstonSheet, "Livingston", "SATURDAY"); }
+
+/**
+ * Basking Ridge reports
+ */
+function sunBaskingRidge(){ studentReport(baskingRidgeSheet, "Basking Ridge", "SUNDAY"); }
+function monBaskingRidge(){ studentReport(baskingRidgeSheet, "Basking Ridge", "MONDAY"); }
+function tuesBaskingRidge(){ studentReport(baskingRidgeSheet, "Basking Ridge", "TUESDAY"); }
+function wedBaskingRidge(){ studentReport(baskingRidgeSheet, "Basking Ridge", "WEDNESDAY"); }
+function thurBaskingRidge(){ studentReport(baskingRidgeSheet, "Basking Ridge", "THURSDAY"); }
+function friBaskingRidge(){ studentReport(baskingRidgeSheet, "Basking Ridge", "FRIDAY"); }
+function satBaskingRidge(){ studentReport(baskingRidgeSheet, "Basking Ridge", "SATURDAY"); }
+
+/**
+ * Westfield reports
+ */
+function sunWestfield(){ studentReport(westfieldSheet, "Westfield", "SUNDAY"); }
+function monWestfield(){ studentReport(westfieldSheet, "Westfield", "MONDAY"); }
+function tuesWestfield(){ studentReport(westfieldSheet, "Westfield", "TUESDAY"); }
+function wedWestfield(){ studentReport(westfieldSheet, "Westfield", "WEDNESDAY"); }
+function thurWestfield(){ studentReport(westfieldSheet, "Westfield", "THURSDAY"); }
+function friWestfield(){ studentReport(westfieldSheet, "Westfield", "FRIDAY"); }
+function satWestfield(){ studentReport(westfieldSheet, "Westfield", "SATURDAY"); }
+
+
+/**
+ * Main controller of the script for the online sessions
+ */
+function studentReport(targetSheet, location, targetDay, ageRange){
+  if(ageRange == undefined){
+    ageRange = [1,12];
+  }
+  var hostData = readHostData(targetDay, ageRange, location);
+  try{
+    clearData(targetSheet);
+  } catch(err){ // Catches error that happens when sheet is already empty
+    console.log(err);
+  }
+  writeHostData(hostData, targetSheet);
+  sortByTimeThenName(targetSheet);
+
+  // Showing what day is being reported on
+  var dayShownCol = getColumnFromName(targetSheet, "DAY_SHOWN") + 1;
+  var dayCell = targetSheet.getRange(startRow, dayShownCol);
+  dayCell.setValue(targetDay);
+
+  // Showing when the script was last run
+  var lastUpdatedCol = getColumnFromName(targetSheet, "LAST_UPDATED") + 1;
+  var lastUpdatedCell = targetSheet.getRange(startRow, lastUpdatedCol);
+  var timeStamp = formatTimeString(Date.now());
+  lastUpdatedCell.setValue(timeStamp);
+}
+
+/**
+ * Sorts the host sheet by time -> room name
+ */
+function sortByTimeThenName(sheetMod){
+  var dataRange = getDataRange(sheetMod);
+  var timeColumn = getColumnFromName(sheetMod, "TIME_SCHEDULED") + 1;
+  var roomNameColumn = getColumnFromName(sheetMod, "FORMATTED_ROOM_NAME") + 1;
+  dataRange.sort([{column: timeColumn, ascending: true},  {column: roomNameColumn, ascending: true}]);
+}
+
+/**
+ * Deletes rows on a sheet then adds the same amount of rows
+ */
+function clearData(targetSheet){
+  var howManyToDelete = targetSheet.getLastRow() - startRow + 1;
+  targetSheet.deleteRows(startRow, howManyToDelete);
+  targetSheet.insertRows(startRow, howManyToDelete);
+}
+
+/** Function only goes from A-Z */
+function columnToLetter(column){
+  var temp, letter = '';
+  while (column > 0){
+    temp = (column - 1) % 26;
+    letter = String.fromCharCode(temp + 65) + letter;
+    column = (column - temp - 1) / 26;
+  }
+  return letter;
+}
+
+/**
+ * Returns the range of data in a specified sheet
+ */
+function getDataRange(targetSheet){
+  var numRows = targetSheet.getLastRow() - 1;
+  var numColumns = targetSheet.getLastColumn();
+  var dataRange = targetSheet.getRange(startRow, 1, numRows, numColumns); // Fetch the data range of the active sheet
+  return dataRange;
+}
+
+
+/**
+ * Function that returns the current day of the week
+ */
+function getCurrentDay(){
+  var dayColumn;
+  var dayOfWeek = new Date().getDay();
+  switch(dayOfWeek){
+    case 0:
+      dayColumn = 'SUNDAY';
+      break;
+    case 1:
+      dayColumn = 'MONDAY';
+      break;
+    case 2:
+      dayColumn = 'TUESDAY';
+      break;
+    case 3:
+      dayColumn = 'WEDNESDAY';
+      break;
+    case 4:
+      dayColumn = 'THURSDAY'; 
+      break;
+    case 5:
+      dayColumn = 'FRIDAY';
+      break;
+    case 6:
+      dayColumn = 'SATURDAY';
+      break;
+  }
+  return dayColumn;
+}
+
+/**
+ * Reads the data the host needs from the original spreadsheet and stores it as a 2d array
+ */
+function readHostData(targetDay, gradeRange, location) {
+  console.log(location)
+  // Arrays for each column of data
+  var hostData = [];
+  var firstNamesList = [];
+  var lastNamesList = [];
+  var studentNotesList = [];
+  var formattedTimeList = [];
+  var roomNameList = [];
+  var gradeList = [];
+  var sNumList = [];
+  var studentStatusList = [];
+
+  //Finding the column number for each named column
+  var timeCol = getColumnFromName(sheet, targetDay);
+  var gradeCol = getColumnFromName(sheet, "GRADE");
+  var firstNameCol = getColumnFromName(sheet, 'FIRST_NAME');
+  var lastNameCol = getColumnFromName(sheet, 'LAST_NAME');
+  var studentStatusCol = getColumnFromName(sheet, 'STUDENT_STATUS');
+  var noteCol = getColumnFromName(sheet, 'STUDENT_NOTES');
+  var sNumCol = getColumnFromName(sheet, 'NUMBER');
+  var sLocationCol = getColumnFromName(sheet, targetDay + '_LOCATION');
+
+   for (var i = 0; i < data.length; ++i) {
+    var row = data[i];
+    // Check if they have a session scheduled for the target day
+    var sTimeScheduled = row[timeCol];
+    if(sTimeScheduled != ""){
+      var sLocation = row[sLocationCol];
+      if(sLocation == location){
+        // Check what grade level the student is and filter if necessary
+        var gradeLevel =  row[gradeCol];
+        if(gradeLevel >= gradeRange[0] && gradeLevel <= gradeRange[1]){
+          gradeList.push(gradeLevel);
+
+          var hourMin = formatTimeString(sTimeScheduled);
+          formattedTimeList.push(hourMin);
+
+          var sFirstName = row[firstNameCol];
+          firstNamesList.push(sFirstName);
+
+          var sLastName = row[lastNameCol];
+          lastNamesList.push(sLastName);
+
+          var sStatus = row[studentStatusCol];
+          studentStatusList.push(sStatus);
+
+          var sNote = row[noteCol];
+          studentNotesList.push(sNote);
+
+          var formattedRoomName = roomFormat(row, targetDay);
+          roomNameList.push(formattedRoomName);
+
+          var sNum = row[sNumCol];
+          sNumList.push(sNum);
+        }
+      }
+    }
+   }
+   //Pushing all arrays into a single array
+   hostData.push(firstNamesList);
+   hostData.push(lastNamesList);
+   hostData.push(formattedTimeList);
+   hostData.push(studentStatusList); 
+   hostData.push(studentNotesList);
+   hostData.push(gradeList);
+   hostData.push(sNumList);
+   hostData.push(roomNameList);
+   //console.log(hostData);
+   return hostData;
+}
+
+/**
+ * Formats a full length time string into a date mm/dd/yyyy
+ */
+function formatDateString(dateString){
+  var date = "";
+  if(dateString != ""){
+    var formattedDate = new Date(dateString);
+    var day =  formattedDate.getDate();
+    var month = formattedDate.getMonth() + 1;  //Need to add 1 because getMonth() is 0 based for some reason
+    var year = formattedDate.getFullYear();
+    date = month + "/" + day + "/" + year; 
+  }
+  return date;
+}
+
+/**
+ * Formats a full length time string into hh:mm AM/PM on a 12 hour system
+ */
+function formatTimeString(timeString){
+    var hourMin = '';
+    if(timeString != ''){
+      var formattedTime = new Date(timeString);
+      var hours = formattedTime.getHours();
+      var min = formattedTime.getMinutes();
+      var amPm = "AM"
+      if(hours == 24){
+        hours -= 12;
+      } else {
+        if(hours > 12){
+          hours -= 12;
+          amPm = "PM"
+        } 
+        if(hours == 12){
+          amPm = "PM";
+        } 
+      }
+      if(min == "0"){
+        min = "00";
+      }
+
+      if(min.toString().length == 1){
+        min = "0" + min;
+      }
+     
+      hourMin = hours + ":" + min + " " + amPm;
+      //console.log(hourMin);
+    }
+    return hourMin;
+}
+
+/**
+ * Takes in array of student data and returns a formatted room name for hosts to use
+ * That way hosts will only need to write rooms for unscheduled students
+ * Current naming convention is *sStatus_AssessLevel_FirstL_Student#_Start-EndTime_fluGame_ConexED 
+ */
+function roomFormat(row, targetDay){
+  var roomName = "";
+  var firstName = row[getColumnFromName(sheet, 'FIRST_NAME')];
+  firstName = firstName.replace(" ", "_");
+  var lastName = row[getColumnFromName(sheet, 'LAST_NAME')]; 
+  var sStatus = row[getColumnFromName(sheet, 'STUDENT_STATUS')];
+  var lastNameLetter = findFirstUpperCase(lastName);
+  roomName += firstName + lastNameLetter;
+
+  var studentLevel = row[getColumnFromName(sheet, 'AssessLevel')];
+  if(studentLevel != "" || studentLevel == 0){
+    roomName = roomName + "_" + studentLevel;
+  }
+
+  if(sStatus != ''){
+    while(sStatus.includes(" ")){
+      sStatus = sStatus.replace(" ", "_");
+    }
+    roomName = "*" + sStatus + "_" +roomName;
+  } 
+  var sNumber = row[getColumnFromName(sheet, 'NUMBER')];
+  if(sNumber != ''){
+    roomName += "_" + sNumber;
+  }
+
+  var startTime = formatTimeString(row[getColumnFromName(sheet, targetDay)]);
+  var timeRegEx = /(\d*):(\d*) (AM|PM)/;
+  var timeSplit = timeRegEx.exec(startTime);
+  var reformattedStartTime = timeSplit[1] + ":" + timeSplit[2];
+  var sessionLength = row[getColumnFromName(sheet, "SESSION_LENGTH")];
+  var endTime = sessionLength;
+  if(typeof endTime === 'number'){ 
+    endTime = addTime(startTime, sessionLength); 
+  } 
+  roomName += "_" + reformattedStartTime + "-" + endTime;
+
+  var fluencyGames = row[getColumnFromName(sheet, "FLUENCY_GAME")];
+  //console.log(fluencyGames);
+  if(fluencyGames != ''){
+    roomName += "_" + fluencyGames;
+  }
+  var game = row[getColumnFromName(sheet, "GAME")];
+    if(game == true){
+    roomName += "_Game" ;
+  }
+  var conexED = row[getColumnFromName(sheet, "CONEXED_ORIENTATION")];
+  if(conexED == true){
+    roomName += "_ConexED" ;
+  }
+  //console.log(roomName);
+  return roomName;
+}
+
+/**
+ * Adds minutes to a time and returns the affected time
+ */
+function addTime(start, minToAdd){
+  var timeRegEx = /(\d*):(\d*) (AM|PM)/;
+  var timeSplit = timeRegEx.exec(start);
+  var hours = parseInt(timeSplit[1]);
+  var mins = parseInt(timeSplit[2]);
+  mins += minToAdd;
+  while(mins >= 60){
+    hours += 1;
+    mins -= 60;
+  }
+  if(hours > 12){
+    hours  = hours % 12;
+  }
+  if(mins == 0){
+    mins = "00";
+  }
+  if(mins.toString().length == 1){
+    mins = "0" + mins;
+  }
+  var endtime = hours + ":" + mins;
+  return endtime;
+}
+
+/**
+ * Finds and returns the first upper case letter in a string
+ */
+function findFirstUpperCase(word){
+  var firstUpper = "";
+  for (var i = 0; i < word.length; i++) {
+    if (word.charAt(i) == word.charAt(i).toUpperCase()) {
+      firstUpper = word.charAt(i);
+      break;
+    }
+  }
+  return firstUpper;
+}
+
+/**
+ * Writes data to a spreadsheet from an array of data to a host copy spreadsheet
+ */
+function writeHostData(hostData, targetSheet){
+  var startRow = 2;
+  // Loops through array of arrays and updates each individual cell
+  for(var i = 0; i < hostData.length; i++){
+    for(var j = 0; j < hostData[i].length; j++){
+      var cell = targetSheet.getRange(startRow + j, i + 1);
+      cell.setValue(hostData[i][j]);
+    }
+  }
+}
+
+/**
+ * Formats true/false to checkboxes given the column letter
+ */
+function formatCheckbox(cLetter, targetSheet){
+  var lastFilled = targetSheet.getLastRow();
+  var range = cLetter + startRow + ":" + cLetter + lastFilled;
+  targetSheet.getRange(range).activate();
+  targetSheet.getRange(range).setDataValidation(SpreadsheetApp.newDataValidation().setAllowInvalid(false).requireCheckbox().build());
+}
+
+/**
+ * Identifies column number in spreadsheet by name
+ */
+function getColumnFromName(targetSheet, name) {
+    var headers = targetSheet.getRange(1,1,1,targetSheet.getLastColumn()).getValues()[0];
+    for (var i = 0; i < headers.length; i++) {
+      if (headers[i] == name) return i;
+    }
+  return -1;
+}
+
+
+
